@@ -67,26 +67,74 @@
 %chica (menos saturada)
 
 %Ejercicio 5 resolucion espacial
-Lena4=Lena(1:4:end,1:4:end,:);
-Lena8=Lena(1:8:end,1:8:end,:);
-Lena16=Lena(1:16:end,1:16:end,:);
-Lena32=Lena(1:32:end,1:32:end,:);
-
-subplot(2,2,1);
-imshow(Lena4, []);
-title('1. Imagen dividido 4');
-
-subplot(2,2,2);
-imshow(Lena8, []);
-title('2.  Imagen dividido 8');
-
-subplot(2,2,3);
-imshow(Lena16);
-title('3. Double sin escalar (se ve mal)');
-
-subplot(2,2,4);
-imshow(Lena32);
-title('4. Double escalada (0 a 1)');
+% Lena4=Lena(1:4:end,1:4:end,:);
+% Lena8=Lena(1:8:end,1:8:end,:);
+% Lena16=Lena(1:16:end,1:16:end,:);
+% Lena32=Lena(1:32:end,1:32:end,:);
 % 
-%
+% figure;
+% 
+% % Imagen original (fila 1, columnas 1-2)
+% subplot(3,2,[1 2]);  % Ocupa ambas columnas de la primera fila
+% imshow(Lena, []);
+% title('1. Imagen original');
+% 
+% % Imagen dividido 4
+% subplot(3,2,3);  % Fila 2, Columna 1
+% imshow(Lena4, []);
+% title('2. Imagen dividido 4');
+% 
+% % Imagen dividido 8
+% subplot(3,2,4);  % Fila 2, Columna 2
+% imshow(Lena8, []);
+% title('3. Imagen dividido 8');
+% 
+% % Imagen dividido 16
+% subplot(3,2,5);  % Fila 3, Columna 1
+% imshow(Lena16, []);
+% title('4. Imagen dividido 16');
+% 
+% % Imagen dividido 32
+% subplot(3,2,6);  % Fila 3, Columna 2
+% imshow(Lena32, []);
+% title('5. Imagen dividido 32');
+% 
+% 
+% % Paso bajo simple: filtro gaussiano
+% filtro = fspecial('gaussian', [5 5], 1.0);
+% 
+% % Aplicar sobremuestreo + filtro
+% Lena4_upsampled = upsampleAndFilter(Lena4, size(Lena), filtro);
+% Lena8_upsampled = upsampleAndFilter(Lena8, size(Lena), filtro);
+% Lena16_upsampled = upsampleAndFilter(Lena16, size(Lena), filtro);
+% Lena32_upsampled = upsampleAndFilter(Lena32, size(Lena), filtro);
+% 
+% % Mostrar resultados
+% figure;
+% 
+% subplot(3,2,[1 2]);
+% imshow(Lena, []);
+% title('1. Imagen original');
+% 
+% subplot(3,2,3);
+% imshow(Lena4_upsampled, []);
+% title('2. Submuestreo x4 + SobreMuestreo + Filtro');
+% 
+% subplot(3,2,4);
+% imshow(Lena8_upsampled, []);
+% title('3. Submuestreo x8 + SobreMuestreo + Filtro');
+% 
+% subplot(3,2,5);
+% imshow(Lena16_upsampled, []);
+% title('4. Submuestreo x16 + SobreMuestreo + Filtro');
+% 
+% subplot(3,2,6);
+% imshow(Lena32_upsampled, []);
+% title('5. Submuestreo x32 + SobreMuestreo + Filtro');
 
+
+% filtroEspacialIdeal() Queda raro honestamente pero es interesante
+
+% 
+% X = dicomread("Corte.dcm");
+tags = 

@@ -136,5 +136,9 @@
 % filtroEspacialIdeal() Queda raro honestamente pero es interesante
 
 % 
-%
+% X = dicomread("Corte.dcm");
+% tags = dicominfo("Corte.dcm"); 
+X = dicomread(tags);
+figure
+imshow(X,[]);
 
