@@ -138,8 +138,8 @@
 % Ejercicio 6
 %La imagen es una colonoscopia mediante tomografía computariazada 
 % X = dicomread("Corte.dcm");
-% tags = dicominfo("Corte.dcm"); 
-% X = dicomread(tags);
+tags = dicominfo("Corte.dcm"); 
+X = dicomread(tags);
 % figure
 % imshow(X,[]);
 % imcontrast Sirve para ajustar la ventana de contraste, pero es lineal.
@@ -151,22 +151,18 @@
 %Una forma de generar vetanas es mediante una nueva transferencia, la cual
 %esta dada por O(i) = C*i + B. B es el brillo y C contraste. 
 
-%Vocabulario HU son todos los valores de i. Pero para tener el formato
-%Hounsonfild se realiza lo siguiente: 
-TC = int16(dicomread(tags));
+%Vocabulario HU son todos los valores de i.
 
 %Tengo 3 ventanas en general para poder observar bien un tejido
 % Los valores para estas ventanas son: 
 % Para hueso: WL=300 y WL 200. C/W = 1000,2000
 % Para Tejido blando: WL=40 y WW = 400. C/w = -50, 400. 
 % Para Pulmones:WL=-600, WW=1600. c/W=-600,1700
-%
 
 %Centro en 1000 y un ancho de 280 veo el esofago, la aorta y 3 organos que
 %no identifico del todo
 %Valor maximo de algun bit = 2333
 %tags.WindowCenter = 40;-600, tags.WindowWidth=[400;1500]
-%
 
 %Preguntas: 
 %Mis Luts son mis nuevas transferencias? 
@@ -177,7 +173,6 @@ TC = int16(dicomread(tags));
 %de mi intensidad? 
 
 %Re escalo la imagen en unidades HU
-% TC = TC * tags.RescaleSlope + tags.RescaleIntercept;
 % imshow(TC,[]);
 % imcontrast
 
@@ -185,17 +180,71 @@ TC = int16(dicomread(tags));
 % imcontrast
 %LUP's Ejercicios guias
 %a)
-valor_maximo = max(TC(:));
-valor_minimo = min(TC(:));
 %b)
 %Para generar una nueva lut genero una nueva recta, donde tenga un 0 y mi
 %pendiente considere todos los valores de la intesidad y los plasme en mi
 %sistema representacional de 256 valores posibles
+%%
+%Ejercicio 7 Ventaneo: 
+TC = int16(dicomread(tags));
+
+% Reescala a HU
+TC_Reescalado = TC * tags.RescaleSlope + tags.RescaleIntercept;
+
+%a) Valores min y max
+valor_maximo = max(TC_Reescalado(:));
+valor_minimo = min(TC_Reescalado(:));
+
+%% b) LUT lineal para todo el rango HU
 in = valor_minimo:valor_maximo;
-% c = (256/(valor_maximo - valor_minimo + 1));
-b = -c*valor_minimo;
-LUT = uint8(c*in + b);
-out = LUT(TC - valor_minimo + 1);
-figure()
-imshow(out)
-imcontrast
+Valor_Centrado=valor_maximo - valor_minimo;
+c = 255/double(Valor_Centrado); % pendiente
+b = -c * valor_minimo;
+LUT_lineal = int16(c * in + b);
+out_lineal = LUT_lineal(TC_Reescalado - valor_minimo + 1);
+
+%% c) LUT con brillo y contraste modificados (saturando)
+C = 1.2;        % contraste (pendiente)
+b_LUT = 10;     % intercepto en unidades 0..255
+LUT_bc = C * LUT_lineal + b_LUT;
+LUT_bc = min(max(LUT_bc, 0), 255);   % saturar a 0 o 255
+LUT_bc = int16(round(LUT_bc));
+idx = round(TC_Reescalado) - valor_minimo + 1;     % índices relativos a 'in'
+idx = min(max(idx, 1), numel(in));                % clamp indices dentro del rango
+out_bc = LUT_bc(idx);
+%% d) LUT con centro y ancho usando funcion crearVentana
+[~, LUT_ventana] = crearVentana(40, 400, valor_minimo, valor_maximo);
+out_ventana = LUT_ventana(TC_Reescalado - valor_minimo + 1);
+
+%% e) Slice y Crop a partir de LUT (b)
+center = 40; width = 400;
+[~, LUT_temp] = crearVentana(center, width, valor_minimo, valor_maximo);
+
+% Slice: todo 0 fuera de la ventana
+LUT_slice = LUT_temp;
+LUT_slice(LUT_slice < 1 | LUT_slice > 254) = 0;
+out_slice = LUT_slice(TC_Reescalado - valor_minimo + 1);
+
+% Crop: 0 a la izquierda, 255 a la derecha
+LUT_crop = LUT_temp;
+idx_left = in < (center - width/2);
+idx_right = in > (center + width/2);
+LUT_crop(idx_left) = 0;
+LUT_crop(idx_right) = 255;
+out_crop = LUT_crop(TC_Reescalado - valor_minimo + 1);
+
+%% f) Binarización por umbral
+umbral = 100; % ejemplo en HU
+LUT_bin = int16(in >= umbral) * 255;
+out_bin = LUT_bin(TC_Reescalado - valor_minimo + 1);
+
+%% Mostrar resultados
+figure;
+subplot(3,3,[1 3]), imshow(TC_Reescalado, []), title('Original HU');
+subplot(3,3,4), imshow(out_lineal, []), title('LUT lineal');
+subplot(3,3,5), imshow(out_bc, []), title('Brillo/Contraste');
+subplot(3,3,6), imshow(out_ventana, []), title('Ventana C/W');
+subplot(3,3,7), imshow(out_slice, []), title('Slice');
+subplot(3,3,8), imshow(out_crop, []), title('Crop');
+subplot(3,3,9), imshow(out_bin, []), title('Binarización');
+
