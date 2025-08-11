@@ -135,10 +135,67 @@
 
 % filtroEspacialIdeal() Queda raro honestamente pero es interesante
 
-% 
+% Ejercicio 6
+%La imagen es una colonoscopia mediante tomografía computariazada 
 % X = dicomread("Corte.dcm");
 % tags = dicominfo("Corte.dcm"); 
-X = dicomread(tags);
-figure
-imshow(X,[]);
+% X = dicomread(tags);
+% figure
+% imshow(X,[]);
+% imcontrast Sirve para ajustar la ventana de contraste, pero es lineal.
 
+% -----------------------------------------------------------
+
+%Ejercicio 7 Ventaneo: 
+%Ahora yo quiero poder obvservar los distintos tipos de tejidos
+%Una forma de generar vetanas es mediante una nueva transferencia, la cual
+%esta dada por O(i) = C*i + B. B es el brillo y C contraste. 
+
+%Vocabulario HU son todos los valores de i. Pero para tener el formato
+%Hounsonfild se realiza lo siguiente: 
+TC = int16(dicomread(tags));
+
+%Tengo 3 ventanas en general para poder observar bien un tejido
+% Los valores para estas ventanas son: 
+% Para hueso: WL=300 y WL 200. C/W = 1000,2000
+% Para Tejido blando: WL=40 y WW = 400. C/w = -50, 400. 
+% Para Pulmones:WL=-600, WW=1600. c/W=-600,1700
+%
+
+%Centro en 1000 y un ancho de 280 veo el esofago, la aorta y 3 organos que
+%no identifico del todo
+%Valor maximo de algun bit = 2333
+%tags.WindowCenter = 40;-600, tags.WindowWidth=[400;1500]
+%
+
+%Preguntas: 
+%Mis Luts son mis nuevas transferencias? 
+
+%La funcion imcontrast me muestra mis intensidades del sistema
+%representacional en funcion de la intensidad de la imagen? 
+%o esta funcion me muestra mi histograma de bits en funcion
+%de mi intensidad? 
+
+%Re escalo la imagen en unidades HU
+% TC = TC * tags.RescaleSlope + tags.RescaleIntercept;
+% imshow(TC,[]);
+% imcontrast
+
+% imshow(TC,[]);
+% imcontrast
+%LUP's Ejercicios guias
+%a)
+valor_maximo = max(TC(:));
+valor_minimo = min(TC(:));
+%b)
+%Para generar una nueva lut genero una nueva recta, donde tenga un 0 y mi
+%pendiente considere todos los valores de la intesidad y los plasme en mi
+%sistema representacional de 256 valores posibles
+in = valor_minimo:valor_maximo;
+% c = (256/(valor_maximo - valor_minimo + 1));
+b = -c*valor_minimo;
+LUT = uint8(c*in + b);
+out = LUT(TC - valor_minimo + 1);
+figure()
+imshow(out)
+imcontrast
