@@ -186,6 +186,7 @@ X = dicomread(tags);
 %sistema representacional de 256 valores posibles
 %%
 %Ejercicio 7 Ventaneo: 
+tags = dicominfo("Corte.dcm");
 TC = int16(dicomread(tags));
 
 % Reescala a HU
@@ -197,7 +198,7 @@ valor_minimo = min(TC_Reescalado(:));
 
 %% b) LUT lineal para todo el rango HU
 in = valor_minimo:valor_maximo;
-Valor_Centrado=valor_maximo - valor_minimo;
+Valor_Centrado = valor_maximo - valor_minimo;
 c = 255/double(Valor_Centrado); % pendiente
 b = -c * valor_minimo;
 LUT_lineal = int16(c * in + b);
@@ -209,9 +210,8 @@ b_LUT = 10;     % intercepto en unidades 0..255
 LUT_bc = C * LUT_lineal + b_LUT;
 LUT_bc = min(max(LUT_bc, 0), 255);   % saturar a 0 o 255
 LUT_bc = int16(round(LUT_bc));
-idx = round(TC_Reescalado) - valor_minimo + 1;     % índices relativos a 'in'
-idx = min(max(idx, 1), numel(in));                % clamp indices dentro del rango
-out_bc = LUT_bc(idx);
+out_bc = LUT_bc(TC_Reescalado - valor_minimo + 1);
+
 %% d) LUT con centro y ancho usando funcion crearVentana
 [~, LUT_ventana] = crearVentana(40, 400, valor_minimo, valor_maximo);
 out_ventana = LUT_ventana(TC_Reescalado - valor_minimo + 1);
@@ -247,4 +247,3 @@ subplot(3,3,6), imshow(out_ventana, []), title('Ventana C/W');
 subplot(3,3,7), imshow(out_slice, []), title('Slice');
 subplot(3,3,8), imshow(out_crop, []), title('Crop');
 subplot(3,3,9), imshow(out_bin, []), title('Binarización');
-
