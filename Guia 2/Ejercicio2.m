@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % Imagen de prueba
-img = imread('corte.dcm');
+img = imread('Lena.png');
 if size(img, 3) == 3
     img = rgb2gray(img);
 end
