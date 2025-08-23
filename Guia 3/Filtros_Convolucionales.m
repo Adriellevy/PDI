@@ -48,6 +48,8 @@
 % 
 % ImagenLap1 = filter2(Lap1, img);
 % ImagenLap2 = filter2(Lap2, img);
+% % imshow(ImagenLap2)
+% % histogram()
 % ImagenLap3 = filter2(Lap3, img);
 % 
 % figure(3)
@@ -92,12 +94,16 @@
 % subplot(1,3,3), imshow(ImagenPrewittV,[]), title('Prewitt Vertical')
 % %c-vi
 % 
-% % Ejercicio c.v - Filtro Sobel
+% Ejercicio c.v - Filtro Sobel
 % Sobel_H = fspecial('sobel');      % Por defecto es horizontal
 % Sobel_V = Sobel_H';               % Vertical
 % 
 % ImagenSobelH = filter2(Sobel_H, img);
 % ImagenSobelV = filter2(Sobel_V, img);
+% 
+% figure(6)
+% imshow(ImagenSobelV)
+% imcontrast
 % 
 % figure(5)
 % subplot(1,3,1), imshow(img), title('Original')
