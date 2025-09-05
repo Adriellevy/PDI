@@ -270,46 +270,50 @@ z = (0:nz-1) * voxelSize(3); % eje Z físico
 % a) RECONSTRUCCIÓN CORONAL Y SAGITAL
 % ============================
 
-% CORONAL (fijo x)
-x0 = round(nx/2);
-[Y,Z] = meshgrid(y,z);
-X = x(x0)*ones(size(Y));
+% simple_volume_viewer(V, x, y, z);
+interactive_slices_lut(V,x,y,z);
 
-coronal_lin = interp3(x,y,z,V, X,Y,Z, 'linear', 0);
-
-coronal_rot = imrotate(coronal_lin', 90, 'bilinear', 'loose');
-figure; imshow(coronal_rot, []);
-title('Corte coronal rotado 45° (sin pérdida)');
-
-% SAGITAL (fijo y)
-y0 = round(ny/2);
-[X,Z] = meshgrid(x,z);
-Y = y(y0)*ones(size(X));
-
-sagittal_lin = interp3(x,y,z,V, X,Y,Z, 'linear', 0);
-sagittal_rot = imrotate(sagittal_lin', 90, 'bilinear', 'loose');
-figure; imshow(sagittal_rot, []);
-title('Corte sagital rotado 45° (sin pérdida)');
+% % CORONAL (fijo x)
+% x0 = round(nx/2);
+% [Y,Z] = meshgrid(y,z);
+% X = x(x0)*ones(size(Y));
+% 
+% coronal_lin = interp3(x,y,z,V, X,Y,Z, 'linear', 0);
+% 
+% coronal_rot = imrotate(coronal_lin', 90, 'bilinear', 'loose');
+% figure; imshow(coronal_rot, []);
+% title('Corte coronal rotado 45° (sin pérdida)');
+% 
+% % SAGITAL (fijo y)
+% y0 = round(ny/2);
+% [X,Z] = meshgrid(x,z);
+% Y = y(y0)*ones(size(X));
+% 
+% sagittal_lin = interp3(x,y,z,V, X,Y,Z, 'linear', 0);
+% sagittal_rot = imrotate(sagittal_lin', 90, 'bilinear', 'loose');
+% figure; imshow(sagittal_rot, []);
+% title('Corte sagital rotado 45° (sin pérdida)');
 
 %% ============================
 % b) CORTE OBLICUO (TRILINEAL)
 % ============================
-P0 = [x(nx/2), y(ny/2), z(round(nz/2))]; % centro del volumen
-u = [1, 0.5, 0];  % vector director en el plano
-v = [0, 0.5, 1];
-u = u / norm(u);
-v = v / norm(v);
 
-Nu = 256; Nv = 256; 
-du = 1; dv = 1;  
-
-[U,Vv] = meshgrid((0:Nu-1)*du, (0:Nv-1)*dv);
-
-Xo = P0(1) + U*u(1) + Vv*v(1);
-Yo = P0(2) + U*u(2) + Vv*v(2);
-Zo = P0(3) + U*u(3) + Vv*v(3);
-
-oblique = interp3(x,y,z,V, Xo,Yo,Zo, 'linear', 0);
-
-figure; imshow(oblique', []); title('Corte oblicuo (trilineal)');
-axis on; daspect([1 1 1]);
+% P0 = [x(nx/2), y(ny/2), z(round(nz/2))]; % centro del volumen
+% u = [1, 0.5, 0];  % vector director en el plano
+% v = [0, 0.5, 1];
+% u = u / norm(u);
+% v = v / norm(v);
+% 
+% Nu = 256; Nv = 256; 
+% du = 1; dv = 1;  
+% 
+% [U,Vv] = meshgrid((0:Nu-1)*du, (0:Nv-1)*dv);
+% 
+% Xo = P0(1) + U*u(1) + Vv*v(1);
+% Yo = P0(2) + U*u(2) + Vv*v(2);
+% Zo = P0(3) + U*u(3) + Vv*v(3);
+% 
+% oblique = interp3(x,y,z,V, Xo,Yo,Zo, 'linear', 0);
+% 
+% figure; imshow(oblique', []); title('Corte oblicuo (trilineal)');
+% axis on; daspect([1 1 1]);
