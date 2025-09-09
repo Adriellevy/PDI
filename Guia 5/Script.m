@@ -211,13 +211,10 @@ disp('   1) Usamos pocos puntos (ajuste aproximado).');
 disp('   2) pinv minimiza en el sentido de mínimos cuadrados.');
 disp('   3) Puede haber pérdida de información, aliasing o interpolación en imwarp.');
 
-%% =========================
-% 5. IMÁGENES ANISOTRÓPICAS (DICOM)
+%% ====================================================
+% 5. IMÁGENES ANISOTRÓPICAS (DICOM)(MATLAB 2016)
 % =====================================================
-% TRABAJO CON VOLUMEN DICOM (MATLAB 2016)
-% ============================
-clear; clc; close all;
-
+% TRABAJO CON VOLUMEN DICOM 
 % Carpeta con cortes DICOM
 folder = 'CT_Colon';  % <-- cambiar a tu carpeta
 files = dir(fullfile(folder, '*.dcm'));
@@ -266,7 +263,7 @@ x = (0:nx-1) * voxelSize(2); % eje X físico
 y = (0:ny-1) * voxelSize(1); % eje Y físico
 z = (0:nz-1) * voxelSize(3); % eje Z físico
 
-%% ============================
+%% ===========================
 % a) RECONSTRUCCIÓN CORONAL Y SAGITAL
 % ============================
 
