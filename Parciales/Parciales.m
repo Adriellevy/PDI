@@ -122,7 +122,7 @@ C = 964;   % centro de ventana
 
 % Binarización normal
 BW1_contours = dicomBinarize(BW1_Preprocesada, W, C, 0);
-figure; imshow(BW1); title('Binarización normal');
+figure; imshow(BW1_contours); title('Binarización normal');
 
 %% Quedarme solo con los bordes de la imagen binarizada
 BW_edges1 = filtro_bordes(BW1_contours, 'morph', 3);
@@ -135,10 +135,38 @@ subplot(1,3,3); imshow(BW_edges2); title('Bordes Canny');
 
 %% Hough circules
 
-[centers, radii] = houghCircles(BW_edges2, [15 30], 1);
+[centers, radii] = houghCircles(BW_edges2, [15 30], 10);
 
-figure; imshow(BW1,[]); hold on;
+figure; imshow(I,[]); hold on;
 viscircles(centers, radii, 'EdgeColor','g');
 title('Círculos detectados con Hough');
+%% 2022 
 
+% I=imread('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\2022\IMG1.bmp'); 
+% % imshow(I_close,[])
+% imgFiltrada=filtroGauss(I,3);
+% binarizada=filtro_bordes(imgFiltrada,'canny',9);
+% imshow(binarizada)
+% [centers, radii] = houghCircles(binarizada, [10 150], 1);
+% viscircles(centers, radii, 'EdgeColor','g');
+% imshow(imgFiltrada,[])
+%% Rec 2022
+% I=dicomread('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\R2022\IM-0269-0023.dcm'); 
+% imshow(I,[]);
+% Info=LeerDatosParaClaseAorta('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\R2022\aorta_info.txt');
+% Centros y radios desde aorta_info.txt (ejemplo)
+% Supongamos que ya creaste los objetos desde el txt:
+aortas = LeerDatosParaClaseAorta('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\R2022\aorta_info.txt');
+
+% centros = [aortas(1).X(:), aortas(1).Y(:)];
+% radios = aortas(1).Radio(:);
+
+% Elegimos la primera imagen ("21.dcm") y su correspondiente DICOM real:
+% mostrarAortas('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\R2022\IM-0269-0021.dcm',centros,radios*2,1);
+
+ [N, areas_px, areas_mm2, score_total] = aortas(3).calcularScore('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\R2022\IM-0269-0023.dcm');
+%% Parcial 2023
+
+I=dicomread('C:\Users\adrie\OneDrive\Escritorio\PDI\Parciales\2023\I1_anon_anon.dcm'); 
+imshow(I,[])
 
